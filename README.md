@@ -12,6 +12,37 @@ Ele existe para manter o repositorio de addons `discuss-hub` no padrao OCA (some
 
 - https://github.com/lcsztl/discuss-hub
 
+## Upstream como submodule (atalho)
+
+Este repo inclui o upstream em `upstream/discuss-hub` como **git submodule**,
+para aparecer no GitHub como uma "pasta" que aponta para o repositorio de addons.
+
+Clonar com submodules:
+
+```bash
+git clone --recurse-submodules https://github.com/lcsztl/discuss-hub-env.git
+```
+
+Se ja clonou:
+
+```bash
+git submodule update --init --recursive
+```
+
+Addons no upstream:
+
+- `mail_discuss_hub`
+- `mail_discuss_hub_crm`
+- `mail_discuss_hub_gateway`
+- `mail_discuss_hub_gateway_devtools`
+- `mail_discuss_hub_helpdesk_mgmt`
+- `mail_gateway_fix`
+- `mail_gateway_whatsapp_common`
+- `mail_gateway_whatsapp_evolution_api`
+- `mail_gateway_whatsapp_evolution_api_chatwoot`
+- `mail_gateway_whatsapp_evolution_api_manager`
+- `mail_gateway_whatsapp_waha`
+
 ## Como funciona
 
 1. O container do Odoo e buildado com:

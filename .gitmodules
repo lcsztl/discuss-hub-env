@@ -1,0 +1,4 @@
+[submodule "upstream/discuss-hub"]
+	path = upstream/discuss-hub
+	url = https://github.com/lcsztl/discuss-hub.git
+	branch = 18.0
