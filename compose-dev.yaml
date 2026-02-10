@@ -53,7 +53,7 @@ services:
       context: .
       dockerfile: docker/odoo/Dockerfile
       args:
-        DISCUSS_HUB_GIT_URL: ${DISCUSS_HUB_GIT_URL:-https://github.com/lcsztl/discuss_hub.git}
+        DISCUSS_HUB_GIT_URL: ${DISCUSS_HUB_GIT_URL:-https://github.com/lcsztl/discuss-hub.git}
         DISCUSS_HUB_REF: ${DISCUSS_HUB_REF:-18.0}
         OCA_SOCIAL_REF: ${OCA_SOCIAL_REF:-18.0}
         OCA_HELPDESK_REF: ${OCA_HELPDESK_REF:-18.0}

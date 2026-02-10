@@ -3,7 +3,7 @@ FROM alpine/git AS build
 
 ARG OCA_SOCIAL_REF=18.0
 ARG OCA_HELPDESK_REF=18.0
-ARG DISCUSS_HUB_GIT_URL=https://github.com/lcsztl/discuss_hub.git
+ARG DISCUSS_HUB_GIT_URL=https://github.com/lcsztl/discuss-hub.git
 ARG DISCUSS_HUB_REF=18.0
 
 RUN mkdir -p /mnt/repositories /mnt/extra-addons
@@ -62,4 +62,3 @@ USER ${ODOO_USER}
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["odoo"]
-

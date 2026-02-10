@@ -2,7 +2,7 @@
 
 Este repositorio e um **facilitador** para rodar o Discuss Hub em ambiente local usando Docker Compose.
 
-Ele existe para manter o repositorio de addons `discuss_hub` no padrao OCA (somente addons), enquanto este repo concentra:
+Ele existe para manter o repositorio de addons `discuss-hub` no padrao OCA (somente addons), enquanto este repo concentra:
 
 - `docker/` (build do Odoo com dependencias)
 - `compose-dev.yaml` (ambiente local)
@@ -10,12 +10,12 @@ Ele existe para manter o repositorio de addons `discuss_hub` no padrao OCA (some
 
 ## Repositorio de addons (upstream)
 
-- https://github.com/lcsztl/discuss_hub
+- https://github.com/lcsztl/discuss-hub
 
 ## Como funciona
 
 1. O container do Odoo e buildado com:
-   - addons do `discuss_hub` (clonado durante o build)
+   - addons do `discuss-hub` (clonado durante o build)
    - dependencias OCA (`OCA/social` e `OCA/helpdesk`)
    - este meta-addon `mail_discuss_hub_full`
 2. Voce sobe o Compose e instala o addon `Mail Discuss Hub - Full Installation` no Odoo.

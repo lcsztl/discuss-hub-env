@@ -5,7 +5,7 @@
     "category": "Discuss",
     "summary": "Meta package to install all Mail Discuss Hub modules and dependencies",
     "author": "Discuss Hub Team",
-    "website": "https://github.com/lcsztl/discuss_hub",
+    "website": "https://github.com/lcsztl/discuss-hub",
     "license": "AGPL-3",
     "depends": [
         "mail_discuss_hub",
@@ -26,4 +26,3 @@
     "application": False,
     "auto_install": False,
 }
-
