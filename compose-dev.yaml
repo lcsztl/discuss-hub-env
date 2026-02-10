@@ -1,0 +1,152 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --port 6379 --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "127.0.0.1:${REDIS_PORT:-6379}:6379"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  mailpit:
+    image: docker.io/axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${MAILPIT_HTTP_PORT:-8025}:8025"
+      - "127.0.0.1:${MAILPIT_SMTP_PORT:-1025}:1025"
+
+  odoo:
+    user: root
+    build:
+      context: .
+      dockerfile: docker/odoo/Dockerfile
+      args:
+        DISCUSS_HUB_GIT_URL: ${DISCUSS_HUB_GIT_URL:-https://github.com/lcsztl/discuss_hub.git}
+        DISCUSS_HUB_REF: ${DISCUSS_HUB_REF:-18.0}
+        OCA_SOCIAL_REF: ${OCA_SOCIAL_REF:-18.0}
+        OCA_HELPDESK_REF: ${OCA_HELPDESK_REF:-18.0}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    tty: true
+    environment:
+      # Odoo official image uses HOST/PORT/USER/PASSWORD to generate odoo.conf.
+      HOST: db
+      PORT: "5432"
+      USER: ${POSTGRES_USER:-admin}
+      PASSWORD: ${POSTGRES_PASSWORD:-admin}
+
+      # Master password (database manager). We set multiple env names for compatibility.
+      ADMIN_PASSWORD: ${ODOO_MASTER_PASSWORD:-admin}
+      ADMIN_PASSWD: ${ODOO_MASTER_PASSWORD:-admin}
+      ODOO_ADMIN_PASSWORD: ${ODOO_MASTER_PASSWORD:-admin}
+
+      SMTP_SERVER: mailpit
+      SMTP_PORT: "1025"
+
+      # Discuss Hub integration settings (optional)
+      DISCUSS_HUB_INTERNAL_HOST: http://odoo:8069
+      DISCUSS_HUB_EVOLUTION_URL: ${DISCUSS_HUB_EVOLUTION_URL:-http://evolution:8080}
+      DISCUSS_HUB_EVOLUTION_APIKEY: ${DISCUSS_HUB_EVOLUTION_APIKEY:-}
+
+      # Store session data in Redis (optional)
+      ODOO_SESSION_REDIS: "1"
+      ODOO_SESSION_REDIS_HOST: redis
+      ODOO_SESSION_REDIS_PREFIX: discusshub-odoo
+      ODOO_SESSION_REDIS_SSL: "false"
+    volumes:
+      - odoo_conf:/etc/odoo
+      - odoo_data:/var/lib/odoo
+    ports:
+      - "127.0.0.1:${ODOO_HTTP_PORT:-8069}:8069"
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  evolution:
+    profiles: ["evolution"]
+    image: evoapicloud/evolution-api:homolog
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - db
+    ports:
+      - "127.0.0.1:${EVOLUTION_HTTP_PORT:-8080}:8080"
+    volumes:
+      - evolution_instances:/evolution/instances
+    environment:
+      SERVER_URL: http://localhost:${EVOLUTION_HTTP_PORT:-8080}
+      DATABASE_PROVIDER: postgresql
+      DATABASE_CONNECTION_URI: postgresql://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-admin}@db:5432/${POSTGRES_DB:-postgres}?schema=public
+      CACHE_REDIS_ENABLED: "true"
+      CACHE_REDIS_URI: redis://redis:6379/6
+      CACHE_REDIS_TTL: "604800"
+      CACHE_REDIS_PREFIX_KEY: evolution
+      AUTHENTICATION_API_KEY: ${DISCUSS_HUB_EVOLUTION_APIKEY:-change-me}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  waha:
+    profiles: ["waha"]
+    image: devlikeapro/waha:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${WAHA_HTTP_PORT:-3000}:3000"
+    environment:
+      WAHA_API_PORT: "3000"
+      WAHA_API_HOST: 0.0.0.0
+      WAHA_API_KEY: ${WAHA_API_KEY:-change-me}
+      WAHA_DASHBOARD_USERNAME: ${WAHA_DASHBOARD_USERNAME:-admin}
+      WAHA_DASHBOARD_PASSWORD: ${WAHA_DASHBOARD_PASSWORD:-change-me}
+    volumes:
+      - waha_data:/data
+
+volumes:
+  db_data:
+  odoo_data:
+  odoo_conf:
+  evolution_instances:
+  redis_data:
+  waha_data:

@@ -1,0 +1,16 @@
+.env
+
+# Editors/OS
+.DS_Store
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Local scratch
+tmp/
+data/
+
