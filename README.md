@@ -8,6 +8,10 @@ Ele existe para manter o repositorio de addons `discuss_hub` no padrao OCA (some
 - `compose-dev.yaml` (ambiente local)
 - `addons/mail_discuss_hub_full` (meta-addon que instala tudo)
 
+## Repositorio de addons (upstream)
+
+- https://github.com/lcsztl/discuss_hub
+
 ## Como funciona
 
 1. O container do Odoo e buildado com:
